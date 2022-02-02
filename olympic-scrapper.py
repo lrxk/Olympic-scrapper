@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
-from numpy import empty
 import pandas as pd
 import re
 import requests
@@ -59,11 +58,6 @@ class olympicScrapper:
 
     def __getPageSoup(self):
         olympic_url = self.__createUrl()
-        try:
-            response = requests.get(url=olympic_url)
-        except requests.ConnectionError as exception:
-            print('URL does not exist')
-
         olympic_data = urlopen(olympic_url)
         olympic_html = olympic_data.read()
         olympic_data.close()
