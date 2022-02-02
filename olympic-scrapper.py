@@ -3,11 +3,13 @@ from urllib.request import urlopen
 from numpy import empty
 import pandas as pd
 import re
+import requests
+
 
 class olympicScrapper:
     url_part1 = 'https://olympics.com/en/olympic-games/'
     url_part2 = '/medals'
-    
+
     def __init__(self, city_host='', year=0) -> None:
         if(city_host == '' and year == 0):
             raise OlympicException('City_host and a year needed')
@@ -23,35 +25,45 @@ class olympicScrapper:
     def __createUrl(self):
         url = self.url_part1+self.city_host+'-'+str(self.year)+self.url_part2
         return url
+
     def __getAllOlympicsSoup(self):
-        type_url='https://olympics.com/en/olympic-games/olympic-results'
-        data=urlopen(type_url)
-        type_html=data.read()
+        type_url = 'https://olympics.com/en/olympic-games/olympic-results'
+        data = urlopen(type_url)
+        type_html = data.read()
         data.close()
-        page_soup=soup(type_html,'html.parser')
-        section_soup=page_soup.find('section',{'class':'Gridstyles__GridContainer-sc-1p7u4tu-0 fLQzGx styles__TabContentNotPaginated-sc-z55d96-6 ezZekU'})
+        page_soup = soup(type_html, 'html.parser')
+        section_soup = page_soup.find('section', {
+                                      'class': 'Gridstyles__GridContainer-sc-1p7u4tu-0 fLQzGx styles__TabContentNotPaginated-sc-z55d96-6 ezZekU'})
         return section_soup
-    #should return the type of the olympics
+    # should return the type of the olympics
+
     def olympicType(self):
-        olympic_game=[]
-        olympic_type=[]
-        for node in self.__getAllOlympicsSoup().findAll('span',{}):
-            if node !='':
+        olympic_game = []
+        olympic_type = []
+        for node in self.__getAllOlympicsSoup().findAll('span', {}):
+            if node != '':
                 olympic_type.append(''.join(node.findAll(text=True)))
-        for node in self.__getAllOlympicsSoup.findAll('p',{}):
-            olympic_game.append(''.join(node.findAll(text=True))) 
-        olympic={}
-        
+        for node in self.__getAllOlympicsSoup().findAll('p', {}):
+            olympic_game.append(''.join(node.findAll(text=True)))
+        olympic = {}
+
         for i in range(len(olympic_game)):
-            olympic_host_city=re.sub("\s[0-9][0-9][0-9][0-9]"," ",olympic_game[i]).strip()
-            olympic_host_city=olympic_host_city.lower()
-            olympic_year=re.sub("[a-zA-Z-.']","",olympic_game[i]).strip()
-            data=str(olympic_host_city)+'-'+str(olympic_year)
-            olympic.update({data:olympic_type[i]})
-        user_input=self.city_host+'-'+str(self.year)
+            olympic_host_city = re.sub(
+                "\s[0-9][0-9][0-9][0-9]", " ", olympic_game[i]).strip()
+            olympic_host_city = olympic_host_city.lower()
+            olympic_year = re.sub("[a-zA-Z-.']", "", olympic_game[i]).strip()
+            data = str(olympic_host_city)+'-'+str(olympic_year)
+            olympic.update({data: olympic_type[i]})
+        user_input = self.city_host+'-'+str(self.year)
         return olympic.get(user_input)
+
     def __getPageSoup(self):
         olympic_url = self.__createUrl()
+        try:
+            response = requests.get(url=olympic_url)
+        except requests.ConnectionError as exception:
+            print('URL does not exist')
+
         olympic_data = urlopen(olympic_url)
         olympic_html = olympic_data.read()
         olympic_data.close()
@@ -103,7 +115,7 @@ class olympicScrapper:
         return total_medals
 
     def to_csv(self, filename):
-        filename+=".csv"
+        filename += ".csv"
         data = {
             'Country': self.__getCountries(),
             'gold_medals': self.__getGoldMedals(),
@@ -113,8 +125,8 @@ class olympicScrapper:
         }
         df = pd.DataFrame(data)
         df.to_csv(filename, index=False)
+
+
 class OlympicException(Exception):
     def __init__(self, message) -> None:
         self.message = message
-ol = olympicScrapper(city_host='Tokyo',year=2020)
-ol.to_csv("tokyo-2020")
