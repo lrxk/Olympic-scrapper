@@ -44,6 +44,24 @@ class olympicScrapper:
         for i in range(0,len(result),4):
             gold_medals.append(result[i])
         return gold_medals
+    def getSilverMedals(self):
+        silver_medals=[]
+        result=self.getResult()
+        for i in range(1,len(result),4):
+            silver_medals.append(result[i])
+        return silver_medals
+    def getBronzeMedals(self):
+        bronze_medals=[]
+        result=self.getResult()
+        for i in range(2,len(result),4):
+            bronze_medals.append(result[i])
+        return bronze_medals
+    def getTotalMedals(self):
+        total_medals=[]
+        result=self.getResult()
+        for i in range(3,len(result),4):
+            total_medals.append(result[i])
+        return total_medals
 class OlympicException(Exception):
     def __init__(self,message) -> None:
         self.message=message
