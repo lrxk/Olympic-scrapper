@@ -118,6 +118,10 @@ class olympicScrapper:
             'total_medals': self.__getTotalMedals()
         }
         df = pd.DataFrame(data)
+        if self.olympicType()=='Summer':
+            filename='Summer_Olympics/'+filename
+        else:
+            filename='Winter_Olympics/'+filename
         df.to_csv(filename, index=False)
 
 
