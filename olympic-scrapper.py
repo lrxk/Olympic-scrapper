@@ -33,30 +33,30 @@ class olympicScrapper:
             if result[i]=='-':
                 result[i]='0'
         return result    
-    def getCountries(self):
+    def __getCountries(self):
         countries=[]
         for node in self.getSoup().findAll('span',{'data-cy':'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
-    def getGoldMedals(self):
+    def __getGoldMedals(self):
         gold_medals=[]
         result=self.getResult()
         for i in range(0,len(result),4):
             gold_medals.append(result[i])
         return gold_medals
-    def getSilverMedals(self):
+    def __getSilverMedals(self):
         silver_medals=[]
         result=self.getResult()
         for i in range(1,len(result),4):
             silver_medals.append(result[i])
         return silver_medals
-    def getBronzeMedals(self):
+    def __getBronzeMedals(self):
         bronze_medals=[]
         result=self.getResult()
         for i in range(2,len(result),4):
             bronze_medals.append(result[i])
         return bronze_medals
-    def getTotalMedals(self):
+    def __getTotalMedals(self):
         total_medals=[]
         result=self.getResult()
         for i in range(3,len(result),4):
