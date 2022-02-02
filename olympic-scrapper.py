@@ -38,6 +38,12 @@ class olympicScrapper:
         for node in self.getSoup().findAll('span',{'data-cy':'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
+    def getGoldMedals(self):
+        gold_medals=[]
+        result=self.getResult()
+        for i in range(0,len(result),4):
+            gold_medals.append(result[i])
+        return gold_medals
 class OlympicException(Exception):
     def __init__(self,message) -> None:
         self.message=message
