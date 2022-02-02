@@ -33,6 +33,11 @@ class olympicScrapper:
             if result[i]=='-':
                 result[i]='0'
         return result    
+    def getCountries(self):
+        countries=[]
+        for node in self.getSoup().findAll('span',{'data-cy':'country-name'}):
+            countries.append(''.join(node.findAll(text=True)))
+        return countries
 class OlympicException(Exception):
     def __init__(self,message) -> None:
         self.message=message
