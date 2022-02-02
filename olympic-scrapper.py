@@ -1,3 +1,6 @@
+from bs4 import BeautifulSoup as soup
+from urllib.request import urlopen
+
 class olympicScrapper:
     url_part1 = 'https://olympics.com/en/olympic-games/'
     url_part2 = '/results'
@@ -12,11 +15,16 @@ class olympicScrapper:
             raise OlympicException('Year must be an int')
         self.city_host=city_host.lower()
         self.year=year
-    def createUrl(self):
+    def __createUrl(self):
         url=self.url_part1+self.city_host+'-'+self.year+self.url_part2
         return url
-    
-    
+    def __getPageSoup(self):
+        olympic_url=self.__createUrl()
+        olympic_data = urlopen(olympic_url)
+        olympic_html = olympic_data.read()
+        olympic_data.close()
+        page_soup=soup(olympic_html,'html.parser')
+        return page_soup
 class OlympicException(Exception):
     def __init__(self,message) -> None:
         self.message=message
