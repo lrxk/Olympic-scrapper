@@ -25,6 +25,14 @@ class olympicScrapper:
         olympic_data.close()
         page_soup=soup(olympic_html,'html.parser')
         return page_soup
+    def __getResult(self):
+        result=[]
+        for node in self.__getPageSoup().findAll('div',{'data-cy':'medal'}):
+            result.append(''.join(node.findAll(text=True)))
+        for i in range(0,len(result)):
+            if result[i]=='-':
+                result[i]='0'
+        return result    
 class OlympicException(Exception):
     def __init__(self,message) -> None:
         self.message=message
