@@ -35,30 +35,30 @@ class olympicScrapper:
         return result    
     def __getCountries(self):
         countries=[]
-        for node in self.getSoup().findAll('span',{'data-cy':'country-name'}):
+        for node in self.__getPageSoup().findAll('span',{'data-cy':'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
     def __getGoldMedals(self):
         gold_medals=[]
-        result=self.getResult()
+        result=self.__getResult()
         for i in range(0,len(result),4):
             gold_medals.append(result[i])
         return gold_medals
     def __getSilverMedals(self):
         silver_medals=[]
-        result=self.getResult()
+        result=self.__getResult()
         for i in range(1,len(result),4):
             silver_medals.append(result[i])
         return silver_medals
     def __getBronzeMedals(self):
         bronze_medals=[]
-        result=self.getResult()
+        result=self.__getResult()
         for i in range(2,len(result),4):
             bronze_medals.append(result[i])
         return bronze_medals
     def __getTotalMedals(self):
         total_medals=[]
-        result=self.getResult()
+        result=self.__getResult()
         for i in range(3,len(result),4):
             total_medals.append(result[i])
         return total_medals
