@@ -1,26 +1,34 @@
+from ctypes.wintypes import BOOLEAN
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 import pandas as pd
 import re
-import requests
+import argparse
 
 
 class olympicScrapper:
     url_part1 = 'https://olympics.com/en/olympic-games/'
     url_part2 = '/medals'
 
-    def __init__(self, city_host='', year=0) -> None:
-        if(city_host == '' and year == 0):
-            raise OlympicException('City_host and a year needed')
-        if((city_host == '' or year == 0)):
-            raise OlympicException('city_host-year pair needed')
-        if not isinstance(city_host, str):
-            raise OlympicException('city_host must be a string')
-        if not isinstance(year, int):
-            raise OlympicException('Year must be an int')
-        self.city_host = city_host.lower()
-        self.year = year
-
+    def __init__(self) -> None:
+        parser=argparse.ArgumentParser(description='Display command')
+        # parser.add_argument('-h','--help',help='How to use the program',type=str,metavar='')
+        parser.add_argument('-city','--city_host',help='name of the city',type=str,metavar='')
+        parser.add_argument('-y','--year',help='Year of the olympic',type=int,metavar=0)
+        parser.add_argument('-csv','--to_csv',help='Return result as a CSV file',type=bool,metavar=False)
+        args=parser.parse_args()
+        if args.city_host:
+            city_host=str(args.city_host)
+            self.city_host=city_host.lower()
+        else:
+            raise OlympicException('A city must be provided')
+        if args.year:
+            self.year=args.year
+        else:
+            raise OlympicException('A year must be provided')
+        if args.to_csv:
+            filename=self.city_host+'-'+str(self.year)
+            self.to_csv(filename=filename)
     def __createUrl(self):
         url = self.url_part1+self.city_host+'-'+str(self.year)+self.url_part2
         return url
@@ -128,3 +136,5 @@ class olympicScrapper:
 class OlympicException(Exception):
     def __init__(self, message) -> None:
         self.message = message
+if __name__ =='__main__':
+    ol=olympicScrapper()
