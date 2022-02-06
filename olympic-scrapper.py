@@ -4,7 +4,7 @@ import pandas as pd
 import re
 import argparse
 import matplotlib.pyplot as plt
-
+import numpy as np
 class olympicScrapper:
     url_part1 = 'https://olympics.com/en/olympic-games/'
     url_part2 = '/medals'
@@ -14,6 +14,7 @@ class olympicScrapper:
         parser.add_argument('-city','--city_host',help='name of the city',type=str,metavar='')
         parser.add_argument('-y','--year',help='Year of the olympic',type=int,metavar=0)
         parser.add_argument('-csv','--to_csv',help='Return result as a CSV file',type=bool,metavar=False)
+        parser.add_argument('-p','--plot',help='Create a bar plot',type=bool,metavar=False)
         args=parser.parse_args()
         if args.city_host:
             city_host=str(args.city_host)
@@ -27,6 +28,9 @@ class olympicScrapper:
         if args.to_csv:
             filename=self.city_host+'-'+str(self.year)
             self.to_csv(filename=filename)
+        if args.plot:
+            filename=self.city_host+'-'+str(self.year)
+            self.plot()
     def __createUrl(self):
         url = self.url_part1+self.city_host+'-'+str(self.year)+self.url_part2
         return url
@@ -131,7 +135,7 @@ class olympicScrapper:
     def __olympic_data(self)->pd.DataFrame:
         
         data = {
-            'Country': self.__getCountries(),
+            'countries': self.__getCountries(),
             'gold_medals': self.__getGoldMedals(),
             'silver_medals': self.__getSilverMedals(),
             'bronze_medals': self.__getBronzeMedals(),
@@ -139,7 +143,38 @@ class olympicScrapper:
         }
         df=pd.DataFrame(data)
         return df
-
+    def plot(self):
+        #TODO
+        
+        df=self.__olympic_data()
+        df=df.astype({'gold_medals':'int32','silver_medals':'int32','bronze_medals':'int32','total_medals':'int32'})
+        
+        # print(df.dtypes)
+    
+        df=df.query('gold_medals > 10')
+        df=df.query('silver_medals > 10')
+        df=df.query('bronze_medals > 10')
+        df=df.query('total_medals > 10')
+        countries=df.countries.array
+        gold_medals=df.gold_medals.array
+        silver_medals=df.silver_medals.array
+        bronze_medals=df.bronze_medals.array
+        total_medals=df.total_medals.array
+        x=np.arange(len(countries))
+        width=0.35       
+        fig,ax=plt.subplots()
+        # plt.figure(figsize=(20, 20), dpi=80)
+        rect1=ax.barh(x-width/2,gold_medals,width)
+        rect2=ax.barh(x+width/2,silver_medals,width)
+        rect3=ax.barh(x,bronze_medals,width)
+        ax.bar_label(rect1,countries)
+        ax.bar_label(rect2,countries)
+        ax.bar_label(rect3,countries)
+        fig.set_size_inches(18.5, 10.5)
+        # fig.tight_layout()
+        plt.show()
+        
+        
 class OlympicException(Exception):
     def __init__(self, message) -> None:
         self.message = message
