@@ -12,7 +12,6 @@ class olympicScrapper:
 
     def __init__(self) -> None:
         parser=argparse.ArgumentParser(description='Display command')
-        # parser.add_argument('-h','--help',help='How to use the program',type=str,metavar='')
         parser.add_argument('-city','--city_host',help='name of the city',type=str,metavar='')
         parser.add_argument('-y','--year',help='Year of the olympic',type=int,metavar=0)
         parser.add_argument('-csv','--to_csv',help='Return result as a CSV file',type=bool,metavar=False)
@@ -67,12 +66,14 @@ class olympicScrapper:
     def __getPageSoup(self):
         olympic_url = self.__createUrl()
         olympic_data = urlopen(olympic_url)
+        real_url=str(olympic_data.geturl())
+        if real_url!=olympic_url:
+            raise OlympicException("Olympic does not exist")
         olympic_html = olympic_data.read()
         olympic_data.close()
         page_soup = soup(olympic_html, 'html.parser')
         return page_soup
     # repeated code , find a way to simplify it
-
     def __getResult(self):
         result = []
         for node in self.__getPageSoup().findAll('div', {'data-cy': 'medal'}):
@@ -87,7 +88,6 @@ class olympicScrapper:
         for node in self.__getPageSoup().findAll('span', {'data-cy': 'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
-
     def __getGoldMedals(self):
         gold_medals = []
         result = self.__getResult()
@@ -138,3 +138,4 @@ class OlympicException(Exception):
         self.message = message
 if __name__ =='__main__':
     ol=olympicScrapper()
+
