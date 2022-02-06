@@ -46,8 +46,12 @@ class olympicScrapper:
         olympic_game = []
         olympic_type = []
         for node in self.__getAllOlympicsSoup().findAll('span', {}):
-            if node != '':
-                olympic_type.append(''.join(node.findAll(text=True)))
+            olympic_type.append(''.join(node.findAll(text=True)))
+        temp=[]
+        for i in range(len(olympic_type)):
+            if olympic_type[i]!='':
+                temp.append(olympic_type[i])
+        olympic_type=temp
         for node in self.__getAllOlympicsSoup().findAll('p', {}):
             olympic_game.append(''.join(node.findAll(text=True)))
         olympic = {}
@@ -141,4 +145,3 @@ class OlympicException(Exception):
         self.message = message
 if __name__ =='__main__':
     ol=olympicScrapper()
-
