@@ -1,10 +1,9 @@
-from ctypes.wintypes import BOOLEAN
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 import pandas as pd
 import re
 import argparse
-
+import matplotlib.pyplot as plt
 
 class olympicScrapper:
     url_part1 = 'https://olympics.com/en/olympic-games/'
@@ -118,6 +117,15 @@ class olympicScrapper:
 
     def to_csv(self, filename):
         filename += ".csv"
+        df = self.__olympic_data()
+        if self.olympicType()=='Summer':
+            filename='Summer_Olympics/'+filename
+        else:
+            filename='Winter_Olympics/'+filename
+        df.to_csv(filename, index=False)
+
+    def __olympic_data(self)->pd.DataFrame:
+        
         data = {
             'Country': self.__getCountries(),
             'gold_medals': self.__getGoldMedals(),
@@ -125,13 +133,8 @@ class olympicScrapper:
             'bronze_medals': self.__getBronzeMedals(),
             'total_medals': self.__getTotalMedals()
         }
-        df = pd.DataFrame(data)
-        if self.olympicType()=='Summer':
-            filename='Summer_Olympics/'+filename
-        else:
-            filename='Winter_Olympics/'+filename
-        df.to_csv(filename, index=False)
-
+        df=pd.DataFrame(data)
+        return df
 
 class OlympicException(Exception):
     def __init__(self, message) -> None:
