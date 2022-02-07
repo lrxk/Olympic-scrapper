@@ -15,7 +15,12 @@ class olympicScrapper:
         parser.add_argument('-y','--year',help='Year of the olympic',type=int,metavar=0)
         parser.add_argument('-csv','--to_csv',help='Return result as a CSV file',type=bool,metavar=False)
         parser.add_argument('-p','--plot',help='Create a bar plot',type=bool,metavar=False)
+        parser.add_argument('-a','--all',help='Get all the olympic',type=bool,metavar=False)
         args=parser.parse_args()
+        if args.all:
+            olympics=self.__getAllOlympics()
+            return
+
         if args.city_host:
             city_host=str(args.city_host)
             self.city_host=city_host.lower()
@@ -45,8 +50,7 @@ class olympicScrapper:
                                       'class': 'Gridstyles__GridContainer-sc-1p7u4tu-0 fLQzGx styles__TabContentNotPaginated-sc-z55d96-6 ezZekU'})
         return section_soup
     # should return the type of the olympics
-
-    def olympicType(self):
+    def __getAllOlympicsType(self):
         olympic_game = []
         olympic_type = []
         for node in self.__getAllOlympicsSoup().findAll('span', {}):
@@ -63,13 +67,41 @@ class olympicScrapper:
         for i in range(len(olympic_game)):
             olympic_host_city = re.sub(
                 "\s[0-9][0-9][0-9][0-9]", " ", olympic_game[i]).strip()
+            olympic_host_city=re.sub("[., ]","-",olympic_host_city)
             olympic_host_city = olympic_host_city.lower()
             olympic_year = re.sub("[a-zA-Z-.']", "", olympic_game[i]).strip()
             data = str(olympic_host_city)+'-'+str(olympic_year)
             olympic.update({data: olympic_type[i]})
+        return olympic
+    def __getAllOlympics(self):
+        olympic_game = []
+        olympic_type = []
+        for node in self.__getAllOlympicsSoup().findAll('span', {}):
+            olympic_type.append(''.join(node.findAll(text=True)))
+        temp=[]
+        for i in range(len(olympic_type)):
+            if olympic_type[i]!='':
+                temp.append(olympic_type[i])
+        olympic_type=temp
+        for node in self.__getAllOlympicsSoup().findAll('p', {}):
+            olympic_game.append(''.join(node.findAll(text=True)))
+        olympic = {}
+
+        for i in range(len(olympic_game)):
+            olympic_host_city = re.sub(
+                "\s[0-9][0-9][0-9][0-9]", "", olympic_game[i]).strip()
+            olympic_host_city=re.sub("[ ]","-",olympic_host_city)
+            olympic_host_city=re.sub("[.]","",olympic_host_city)
+            olympic_host_city = olympic_host_city.lower()
+            olympic_year = re.sub("[a-zA-Z-.']", "", olympic_game[i]).strip()
+            olympic.update({olympic_host_city:olympic_year})
+        return olympic
+    def olympicType(self):
+        olympic=self.__getAllOlympicsType()
         user_input = self.city_host+'-'+str(self.year)
         return olympic.get(user_input)
-
+    def printOlympic(self):
+        print(self.__getAllOlympics())
     def __getPageSoup(self):
         olympic_url = self.__createUrl()
         olympic_data = urlopen(olympic_url)
@@ -180,3 +212,4 @@ class OlympicException(Exception):
         self.message = message
 if __name__ =='__main__':
     ol=olympicScrapper()
+    ol.printOlympic()
