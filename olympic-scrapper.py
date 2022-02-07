@@ -130,7 +130,11 @@ class olympicScrapper:
         olympic_data = urlopen(olympic_url)
         real_url = str(olympic_data.geturl())
         if real_url != olympic_url:
-            raise OlympicException("Olympic does not exist")
+            empty_result_url=self.url_part1+self.city_host+'-'+str(self.year)+'/results'
+            if real_url==empty_result_url:
+                return None
+            else:
+                raise OlympicException("Olympic does not exist")
         olympic_html = olympic_data.read()
         olympic_data.close()
         page_soup = soup(olympic_html, 'html.parser')
@@ -139,6 +143,8 @@ class olympicScrapper:
 
     def __getResult(self):
         result = []
+        if self.__getPageSoup()==None:
+            return result
         for node in self.__getPageSoup().findAll('div', {'data-cy': 'medal'}):
             result.append(''.join(node.findAll(text=True)))
         for i in range(0, len(result)):
@@ -148,37 +154,29 @@ class olympicScrapper:
 
     def __getCountries(self):
         countries = []
+        if self.__getPageSoup()==None:
+            return countries
         for node in self.__getPageSoup().findAll('span', {'data-cy': 'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
-
-    def __getGoldMedals(self):
-        gold_medals = []
-        result = self.__getResult()
-        for i in range(0, len(result), 4):
-            gold_medals.append(result[i])
-        return gold_medals
-
-    def __getSilverMedals(self):
-        silver_medals = []
-        result = self.__getResult()
-        for i in range(1, len(result), 4):
-            silver_medals.append(result[i])
-        return silver_medals
-
-    def __getBronzeMedals(self):
-        bronze_medals = []
-        result = self.__getResult()
-        for i in range(2, len(result), 4):
-            bronze_medals.append(result[i])
-        return bronze_medals
-
-    def __getTotalMedals(self):
-        total_medals = []
-        result = self.__getResult()
-        for i in range(3, len(result), 4):
-            total_medals.append(result[i])
-        return total_medals
+    def __getMedals(self,medal_type:str):
+        result=self.__getResult()
+        medals=[]
+        if medal_type=='gold':
+            for i in range(0, len(result), 4):
+                medals.append(result[i])
+        elif medal_type=='silver':
+            for i in range(1, len(result), 4):
+                medals.append(result[i])
+        elif medal_type=='bronze':
+            for i in range(2, len(result), 4):
+                medals.append(result[i])
+        elif medal_type=='total':
+            for i in range(3, len(result), 4):
+                medals.append(result[i])
+        else:
+            raise OlympicException('Specify a medal type')
+        return medals
 
     def to_csv(self, filename):
         filename += ".csv"
@@ -193,10 +191,10 @@ class olympicScrapper:
 
         data = {
             'countries': self.__getCountries(),
-            'gold_medals': self.__getGoldMedals(),
-            'silver_medals': self.__getSilverMedals(),
-            'bronze_medals': self.__getBronzeMedals(),
-            'total_medals': self.__getTotalMedals()
+            'gold_medals': self.__getMedals(medal_type='gold'),
+            'silver_medals': self.__getMedals(medal_type='silver'),
+            'bronze_medals': self.__getMedals(medal_type='bronze'),
+            'total_medals': self.__getMedals(medal_type='total'),
         }
         df = pd.DataFrame(data)
         return df
