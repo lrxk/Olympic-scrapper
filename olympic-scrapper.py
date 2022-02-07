@@ -18,7 +18,7 @@ class olympicScrapper:
         parser.add_argument('-a','--all',help='Get all the olympic',type=bool,metavar=False)
         args=parser.parse_args()
         if args.all:
-            olympics=self.__getAllOlympics()
+            self.to_csvAllOlympic()
             return
 
         if args.city_host:
@@ -96,6 +96,16 @@ class olympicScrapper:
             olympic_year = re.sub("[a-zA-Z-.']", "", olympic_game[i]).strip()
             olympic.update({olympic_host_city:olympic_year})
         return olympic
+    def to_csvAllOlympic(self):
+        olympics=self.__getAllOlympics()
+        cities_host=list(olympics.keys())
+        years=list(olympics.values())
+        for i in range(len(cities_host)):
+            self.city_host=cities_host[i]
+            self.year=years[i]
+            filename=str(cities_host[i])+'-'+str(years[i])
+            self.to_csv(filename=filename)
+
     def olympicType(self):
         olympic=self.__getAllOlympicsType()
         user_input = self.city_host+'-'+str(self.year)
@@ -212,4 +222,4 @@ class OlympicException(Exception):
         self.message = message
 if __name__ =='__main__':
     ol=olympicScrapper()
-    ol.printOlympic()
+    
