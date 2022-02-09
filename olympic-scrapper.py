@@ -1,3 +1,4 @@
+from calendar import c
 from bs4 import BeautifulSoup as soup
 from urllib.request import urlopen
 import pandas as pd
@@ -23,6 +24,10 @@ class olympicScrapper:
             '-p', '--plot', help='Create a bar plot', type=bool, metavar=False)
         parser.add_argument(
             '-a', '--all', help='Get all the olympic', type=bool, metavar=False)
+        parser.add_argument(
+            '-as', '--allStats', help='Get the general stats of all olympics', type=bool, metavar=False)
+        parser.add_argument(
+            '-s', '--stats', help='Get the stats of a specified olympic', type=bool, metavar=False)
         args = parser.parse_args()
         if args.all:
             self.to_csvAllOlympic()
@@ -102,6 +107,7 @@ class olympicScrapper:
                 "\s[0-9][0-9][0-9][0-9]", "", olympic_game[i]).strip()
             olympic_host_city = re.sub("[ ]", "-", olympic_host_city)
             olympic_host_city = re.sub("[.]", "", olympic_host_city)
+            olympic_host_city = re.sub("[']", "-", olympic_host_city)
             olympic_host_city = olympic_host_city.lower()
             olympic_year = re.sub("[a-zA-Z-.']", "", olympic_game[i]).strip()
             olympic.update({olympic_host_city: olympic_year})
@@ -122,28 +128,28 @@ class olympicScrapper:
         user_input = self.city_host+'-'+str(self.year)
         return olympic.get(user_input)
 
-    def printOlympic(self):
-        print(self.__getAllOlympics())
-
     def __getPageSoup(self):
         olympic_url = self.__createUrl()
         olympic_data = urlopen(olympic_url)
         real_url = str(olympic_data.geturl())
         if real_url != olympic_url:
-            empty_result_url=self.url_part1+self.city_host+'-'+str(self.year)+'/results'
-            if real_url==empty_result_url:
+            # the result of the olympic is empty
+            # the first editions were not so official
+            empty_result_url = self.url_part1 + \
+                self.city_host+'-'+str(self.year)+'/results'
+            if real_url == empty_result_url:
                 return None
             else:
-                raise OlympicException("Olympic does not exist")
+                err = "Olympic does not exist:" + self.city_host+"-"+self.year
+                raise OlympicException(err)
         olympic_html = olympic_data.read()
         olympic_data.close()
         page_soup = soup(olympic_html, 'html.parser')
         return page_soup
-    # repeated code , find a way to simplify it
 
     def __getResult(self):
         result = []
-        if self.__getPageSoup()==None:
+        if self.__getPageSoup() == None:
             return result
         for node in self.__getPageSoup().findAll('div', {'data-cy': 'medal'}):
             result.append(''.join(node.findAll(text=True)))
@@ -154,26 +160,29 @@ class olympicScrapper:
 
     def __getCountries(self):
         countries = []
-        if self.__getPageSoup()==None:
+        if self.__getPageSoup() == None:
             return countries
         for node in self.__getPageSoup().findAll('span', {'data-cy': 'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
-    def __getMedals(self,medal_type:str):
-        result=self.__getResult()
-        medals=[]
-        if medal_type=='gold':
+
+    def __getMedals(self, medal_type: str):
+        result = self.__getResult()
+        medals = []
+        if medal_type == 'gold':
             for i in range(0, len(result), 4):
                 medals.append(result[i])
-        elif medal_type=='silver':
+        elif medal_type == 'silver':
             for i in range(1, len(result), 4):
                 medals.append(result[i])
-        elif medal_type=='bronze':
+        elif medal_type == 'bronze':
             for i in range(2, len(result), 4):
                 medals.append(result[i])
-        elif medal_type=='total':
+        elif medal_type == 'total':
             for i in range(3, len(result), 4):
                 medals.append(result[i])
+        elif result == []:
+            return medals
         else:
             raise OlympicException('Specify a medal type')
         return medals
@@ -186,6 +195,51 @@ class olympicScrapper:
         else:
             filename = 'Winter_Olympics/'+filename
         df.to_csv(filename, index=False)
+    def __getGeneralOlympicStats(self):
+        olympic_url=self.url_part1+self.city_host+'-'+str(self.year)
+        
+        pass
+    def __getGeneralAllOlympicStats(self):
+        olympic = self.__getAllOlympics()
+        cities_host = list(olympic.keys)
+        years = list(olympic.values)
+        olympic_type = list(self.__getAllOlympicsType().values)
+        olympic_stats={}
+        for i in range(len(cities_host)):
+            olympic_url=self.url_part1+cities_host[i]+'-'+str(years[i])
+            olympic_data = urlopen(olympic_url)
+            olympic_html = olympic_data.read()
+            olympic_data.close()
+            page_soup = soup(olympic_html, 'html.parser')
+            stats = []
+            for node in page_soup.findAll('div', {'class': 'styles__FactItems-sc-1w4me2-2 daFleI'}):
+                stats.append(''.join(node.findAll(text=True)))
+            new_stats = []
+            new_stats.append(stats[1].replace('Country', ''))
+            new_stats.append(stats[2].replace('Athletes', ''))
+            new_stats.append(stats[3].replace('Teams', ''))
+            new_stats.append(stats[4].replace('Events', ''))
+            key=cities_host[i]+'-'+years[i]
+            olympic_stats.update({key:new_stats})
+        country=[]
+        athletes_nb=[]
+        team_nb=[]
+        nb_event=[]
+        for i in range(len(olympic_stats)):
+            key=cities_host[i]+'-'+years[i]
+            country.append(olympic_stats.get(key)[1])
+            athletes_nb.append(olympic_stats.get(key)[2])
+            team_nb.append(olympic_stats.get(key)[3])
+            nb_event.append(olympic_stats.get(key)[4])
+        data={
+            "city_host":cities_host,
+            "year":years,
+            "number of athletes":athletes_nb,
+            "number of team":team_nb,
+            "number of event":nb_event
+        }
+        df=pd.DataFrame(data)
+        return df
 
     def __olympic_data(self) -> pd.DataFrame:
 
@@ -198,6 +252,7 @@ class olympicScrapper:
         }
         df = pd.DataFrame(data)
         return df
+    # Not working as pleased
 
     def plot(self):
         # TODO
@@ -231,6 +286,8 @@ class olympicScrapper:
         # fig.tight_layout()
         plt.show()
 
+# Exception class nothing special send a specific message about the error
+
 
 class OlympicException(Exception):
     def __init__(self, message) -> None:
@@ -239,4 +296,3 @@ class OlympicException(Exception):
 
 if __name__ == '__main__':
     ol = olympicScrapper()
-    ol.printSomething()
