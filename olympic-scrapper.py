@@ -45,6 +45,8 @@ class olympicScrapper:
         if args.city_host and args.year:
             if args.stats:
                 self.__getGeneralOlympicStats() 
+        if args.all and args.allStats:
+            self.__getGeneralAllOlympicStats()            
         if args.to_csv:
             filename = self.city_host+'-'+str(self.year)
             self.to_csv(filename=filename)
@@ -259,7 +261,10 @@ class olympicScrapper:
         }
         df=pd.DataFrame(data)
         return df
-
+    def __generalOlympicData(self):
+        filename="/GeneralStats/generalStats.csv"
+        df=self.__getGeneralAllOlympicStats()
+        df.to_csv(filename,sep=",",index=False)
     def __olympic_data(self) -> pd.DataFrame:
 
         data = {
