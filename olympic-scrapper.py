@@ -197,8 +197,23 @@ class olympicScrapper:
         df.to_csv(filename, index=False)
     def __getGeneralOlympicStats(self):
         olympic_url=self.url_part1+self.city_host+'-'+str(self.year)
-        
-        pass
+        olympic_data=urlopen(olympic_url)
+        olympic_html=olympic_data.read()
+        olympic_data.close()
+        page_soup = soup(olympic_html, 'html.parser')
+        stats = []
+        for node in page_soup.findAll('div', {'class': 'styles__FactItems-sc-1w4me2-2 daFleI'}):
+            stats.append(''.join(node.findAll(text=True)))
+        new_stats = []
+        new_stats.append(stats[1].replace('Country', ''))
+        new_stats.append(stats[2].replace('Athletes', ''))
+        new_stats.append(stats[3].replace('Teams', ''))
+        new_stats.append(stats[4].replace('Events', ''))
+        print(self.city_host+" "+self.year,end="\n")
+        print("Country :"+new_stats[0],end="\n")
+        print("Number of Athletes :"+new_stats[1],end="\n")
+        print("Number of teams :"+new_stats[2],end="\n")
+        print("Number of events :"+new_stats[3],end="\n")
     def __getGeneralAllOlympicStats(self):
         olympic = self.__getAllOlympics()
         cities_host = list(olympic.keys)
@@ -234,6 +249,7 @@ class olympicScrapper:
         data={
             "city_host":cities_host,
             "year":years,
+            "Type":olympic_type,
             "number of athletes":athletes_nb,
             "number of team":team_nb,
             "number of event":nb_event
