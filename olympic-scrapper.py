@@ -32,7 +32,7 @@ class olympicScrapper:
         if args.all:
             self.to_csvAllOlympic()
             return
-
+        
         if args.city_host:
             city_host = str(args.city_host)
             self.city_host = city_host.lower()
@@ -42,6 +42,9 @@ class olympicScrapper:
             self.year = args.year
         else:
             raise OlympicException('A year must be provided')
+        if args.city_host and args.year:
+            if args.stats:
+                self.__getGeneralOlympicStats() 
         if args.to_csv:
             filename = self.city_host+'-'+str(self.year)
             self.to_csv(filename=filename)
@@ -209,7 +212,7 @@ class olympicScrapper:
         new_stats.append(stats[2].replace('Athletes', ''))
         new_stats.append(stats[3].replace('Teams', ''))
         new_stats.append(stats[4].replace('Events', ''))
-        print(self.city_host+" "+self.year,end="\n")
+        print(self.city_host+" "+str(self.year),end="\n")
         print("Country :"+new_stats[0],end="\n")
         print("Number of Athletes :"+new_stats[1],end="\n")
         print("Number of teams :"+new_stats[2],end="\n")
