@@ -12,9 +12,9 @@ class olympicScrapper:
     def __init__(self) -> None:
         parser=argparse.ArgumentParser(description='Display command')
         parser.add_argument('-city','--city_host',help='name of the city',type=str,metavar='')
-        parser.add_argument('-y','--year',help='Year of the olympic',type=int,metavar=0)
-        parser.add_argument('-csv','--to_csv',help='Return result as a CSV file',type=bool,metavar=False)
-        parser.add_argument('-p','--plot',help='Create a bar plot',type=bool,metavar=False)
+        parser.add_argument('-y','--year',help='Year of the olympic',type=int,metavar='')
+        parser.add_argument('-csv','--to_csv',help='Return result as a CSV file',type=bool,metavar='')
+        parser.add_argument('-p','--plot',help='Create a bar plot',type=bool,metavar='')
         args=parser.parse_args()
         if args.city_host:
             city_host=str(args.city_host)
@@ -31,6 +31,8 @@ class olympicScrapper:
         if args.plot:
             filename=self.city_host+'-'+str(self.year)
             self.plot()
+        self.page_soup=self.__getPageSoup()
+        self.result=self.__getResult()
     def __createUrl(self):
         url = self.url_part1+self.city_host+'-'+str(self.year)+self.url_part2
         return url
@@ -49,14 +51,16 @@ class olympicScrapper:
     def olympicType(self):
         olympic_game = []
         olympic_type = []
-        for node in self.__getAllOlympicsSoup().findAll('span', {}):
+        soup=self.__getAllOlympicsSoup()
+        for node in soup.findAll('span', {}):
             olympic_type.append(''.join(node.findAll(text=True)))
         temp=[]
         for i in range(len(olympic_type)):
             if olympic_type[i]!='':
                 temp.append(olympic_type[i])
         olympic_type=temp
-        for node in self.__getAllOlympicsSoup().findAll('p', {}):
+        
+        for node in soup.findAll('p', {}):
             olympic_game.append(''.join(node.findAll(text=True)))
         olympic = {}
 
@@ -83,7 +87,8 @@ class olympicScrapper:
     # repeated code , find a way to simplify it
     def __getResult(self):
         result = []
-        for node in self.__getPageSoup().findAll('div', {'data-cy': 'medal'}):
+        
+        for node in self.page_soup.findAll('div', {'data-cy': 'medal'}):
             result.append(''.join(node.findAll(text=True)))
         for i in range(0, len(result)):
             if result[i] == '-':
@@ -92,35 +97,31 @@ class olympicScrapper:
 
     def __getCountries(self):
         countries = []
-        for node in self.__getPageSoup().findAll('span', {'data-cy': 'country-name'}):
+        for node in self.page_soup.findAll('span', {'data-cy': 'country-name'}):
             countries.append(''.join(node.findAll(text=True)))
         return countries
     def __getGoldMedals(self):
         gold_medals = []
-        result = self.__getResult()
-        for i in range(0, len(result), 4):
-            gold_medals.append(result[i])
+        for i in range(0, len(self.result), 4):
+            gold_medals.append(self.result[i])
         return gold_medals
 
     def __getSilverMedals(self):
         silver_medals = []
-        result = self.__getResult()
-        for i in range(1, len(result), 4):
-            silver_medals.append(result[i])
+        for i in range(1, len(self.result), 4):
+            silver_medals.append(self.result[i])
         return silver_medals
 
     def __getBronzeMedals(self):
         bronze_medals = []
-        result = self.__getResult()
-        for i in range(2, len(result), 4):
-            bronze_medals.append(result[i])
+        for i in range(2, len(self.result), 4):
+            bronze_medals.append(self.result[i])
         return bronze_medals
 
     def __getTotalMedals(self):
         total_medals = []
-        result = self.__getResult()
-        for i in range(3, len(result), 4):
-            total_medals.append(result[i])
+        for i in range(3, len(self.result), 4):
+            total_medals.append(self.result[i])
         return total_medals
 
     def to_csv(self, filename):
