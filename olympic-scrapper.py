@@ -87,14 +87,12 @@ class olympicScrapper:
     # repeated code , find a way to simplify it
     def __getResult(self):
         result = []
-        
         for node in self.page_soup.findAll('div', {'data-cy': 'medal'}):
             result.append(''.join(node.findAll(text=True)))
         for i in range(0, len(result)):
             if result[i] == '-':
                 result[i] = '0'
         return result
-
     def __getCountries(self):
         countries = []
         for node in self.page_soup.findAll('span', {'data-cy': 'country-name'}):
@@ -124,7 +122,7 @@ class olympicScrapper:
             total_medals.append(self.result[i])
         return total_medals
 
-    def to_csv(self, filename):
+    def to_csv(self, filename)->None:
         filename += ".csv"
         df = self.__olympic_data()
         if self.olympicType()=='Summer':
