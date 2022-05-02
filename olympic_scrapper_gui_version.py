@@ -47,6 +47,20 @@ class App:
         GLabel_661["justify"] = "center"
         GLabel_661["text"] = "Year"
         GLabel_661.place(x=310,y=140,width=70,height=25)
+
+        GButton_65=tk.Button(root)
+        GButton_65["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times',size=10)
+        GButton_65["font"] = ft
+        GButton_65["fg"] = "#000000"
+        GButton_65["justify"] = "center"
+        GButton_65["text"] = "Send"
+        GButton_65.place(x=210,y=250,width=70,height=25)
+        GButton_65["command"] = self.GButton_65_command
+
+    def GButton_65_command(self):
+        print("command")
+
 if __name__ == "__main__":
     root = tk.Tk()
     app = App(root)
