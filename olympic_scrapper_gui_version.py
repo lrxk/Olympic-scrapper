@@ -14,51 +14,51 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
 
-        GLineEdit_310=tk.Entry(root)
-        GLineEdit_310["borderwidth"] = "1px"
+        city_label=tk.Entry(root)
+        city_label["borderwidth"] = "1px"
         ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_310["font"] = ft
-        GLineEdit_310["fg"] = "#333333"
-        GLineEdit_310["justify"] = "center"
-        GLineEdit_310["text"] = "Enter City name"
-        GLineEdit_310.place(x=40,y=170,width=164,height=30)
+        city_label["font"] = ft
+        city_label["fg"] = "#333333"
+        city_label["justify"] = "center"
+        city_label["text"] = "Enter City name"
+        city_label.place(x=40,y=170,width=164,height=30)
 
-        GLineEdit_763=tk.Entry(root)
-        GLineEdit_763["borderwidth"] = "1px"
+        year_label=tk.Entry(root)
+        year_label["borderwidth"] = "1px"
         ft = tkFont.Font(family='Times',size=10)
-        GLineEdit_763["font"] = ft
-        GLineEdit_763["fg"] = "#333333"
-        GLineEdit_763["justify"] = "center"
-        GLineEdit_763["text"] = "Enter Year"
-        GLineEdit_763.place(x=260,y=170,width=178,height=30)
+        year_label["font"] = ft
+        year_label["fg"] = "#333333"
+        year_label["justify"] = "center"
+        year_label["text"] = "Enter Year"
+        year_label.place(x=260,y=170,width=178,height=30)
 
-        GLabel_71=tk.Label(root)
+        city_entry=tk.Label(root)
         ft = tkFont.Font(family='Times',size=10)
-        GLabel_71["font"] = ft
-        GLabel_71["fg"] = "#333333"
-        GLabel_71["justify"] = "center"
-        GLabel_71["text"] = "City"
-        GLabel_71.place(x=80,y=140,width=70,height=25)
+        city_entry["font"] = ft
+        city_entry["fg"] = "#333333"
+        city_entry["justify"] = "center"
+        city_entry["text"] = "City"
+        city_entry.place(x=80,y=140,width=70,height=25)
 
-        GLabel_661=tk.Label(root)
+        year_entry=tk.Label(root)
         ft = tkFont.Font(family='Times',size=10)
-        GLabel_661["font"] = ft
-        GLabel_661["fg"] = "#333333"
-        GLabel_661["justify"] = "center"
-        GLabel_661["text"] = "Year"
-        GLabel_661.place(x=310,y=140,width=70,height=25)
+        year_entry["font"] = ft
+        year_entry["fg"] = "#333333"
+        year_entry["justify"] = "center"
+        year_entry["text"] = "Year"
+        year_entry.place(x=310,y=140,width=70,height=25)
 
-        GButton_65=tk.Button(root)
-        GButton_65["bg"] = "#f0f0f0"
+        send_button=tk.Button(root)
+        send_button["bg"] = "#f0f0f0"
         ft = tkFont.Font(family='Times',size=10)
-        GButton_65["font"] = ft
-        GButton_65["fg"] = "#000000"
-        GButton_65["justify"] = "center"
-        GButton_65["text"] = "Send"
-        GButton_65.place(x=210,y=250,width=70,height=25)
-        GButton_65["command"] = self.GButton_65_command
+        send_button["font"] = ft
+        send_button["fg"] = "#000000"
+        send_button["justify"] = "center"
+        send_button["text"] = "Send"
+        send_button.place(x=210,y=250,width=70,height=25)
+        send_button["command"] = self.send_button_command
 
-    def GButton_65_command(self):
+    def send_button_command(self):
         print("command")
 
 if __name__ == "__main__":
