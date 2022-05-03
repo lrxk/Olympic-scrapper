@@ -44,13 +44,15 @@ class App:
         city_label.place(x=80,y=140,width=70,height=25)
 
         #information label
+        self.info_text=tk.StringVar()
+        self.info_text.set("")
         self.info_label=tk.Label(root)
         ft = tkFont.Font(family='Times',size=10)
         self.info_label["font"] = ft
         self.info_label["fg"] = "#333333"
         self.info_label["justify"] = "center"
-        self.info_label["text"] = "SEX"
-        self.info_label.place(x=210,y=350,width=70,height=25)
+        self.info_label["text"] = self.info_text.get()
+        self.info_label.place(x=210,y=350,width=200,height=25)
 
 
         year_label=tk.Label(root)
@@ -72,7 +74,14 @@ class App:
         send_button["command"] = self.send_button_command
 
     def send_button_command(self):
-        
+        if self.year_entry.get()=="" or self.city_entry.get()=="":
+            print("toto")
+            self.info_text.set("Entry must not be empty")
+            self.info_label["text"] = self.info_text.get()
+        else:
+            ol=OlympicScrapper(self.city_entry.get(),self.year_entry.get())
+            print(ol.olympic_data())
+            pass
         print("command")
 class OlympicException(Exception):
     def __init__(self, message) -> None:
