@@ -17,23 +17,23 @@ class App:
         root.geometry(alignstr)
         root.resizable(width=False, height=False)
 
-        city_entry=tk.Entry(root)
-        city_entry["borderwidth"] = "1px"
+        self.city_entry=tk.Entry(root)
+        self.city_entry["borderwidth"] = "1px"
         ft = tkFont.Font(family='Times',size=10)
-        city_entry["font"] = ft
-        city_entry["fg"] = "#333333"
-        city_entry["justify"] = "center"
-        city_entry["text"] = "Enter City name"
-        city_entry.place(x=40,y=170,width=164,height=30)
+        self.city_entry["font"] = ft
+        self.city_entry["fg"] = "#333333"
+        self.city_entry["justify"] = "center"
+        self.city_entry["text"] = "Enter City name"
+        self.city_entry.place(x=40,y=170,width=164,height=30)
 
-        year_entry=tk.Entry(root)
-        year_entry["borderwidth"] = "1px"
+        self.year_entry=tk.Entry(root)
+        self.year_entry["borderwidth"] = "1px"
         ft = tkFont.Font(family='Times',size=10)
-        year_entry["font"] = ft
-        year_entry["fg"] = "#333333"
-        year_entry["justify"] = "center"
-        year_entry["text"] = "Enter Year"
-        year_entry.place(x=260,y=170,width=178,height=30)
+        self.year_entry["font"] = ft
+        self.year_entry["fg"] = "#333333"
+        self.year_entry["justify"] = "center"
+        self.year_entry["text"] = "Enter Year"
+        self.year_entry.place(x=260,y=170,width=178,height=30)
 
         city_label=tk.Label(root)
         ft = tkFont.Font(family='Times',size=10)
@@ -44,13 +44,13 @@ class App:
         city_label.place(x=80,y=140,width=70,height=25)
 
         #information label
-        info_label=tk.Label(root)
+        self.info_label=tk.Label(root)
         ft = tkFont.Font(family='Times',size=10)
-        info_label["font"] = ft
-        info_label["fg"] = "#333333"
-        info_label["justify"] = "center"
-        info_label["text"] = "SEX"
-        info_label.place(x=210,y=350,width=70,height=25)
+        self.info_label["font"] = ft
+        self.info_label["fg"] = "#333333"
+        self.info_label["justify"] = "center"
+        self.info_label["text"] = "SEX"
+        self.info_label.place(x=210,y=350,width=70,height=25)
 
 
         year_label=tk.Label(root)
@@ -72,6 +72,7 @@ class App:
         send_button["command"] = self.send_button_command
 
     def send_button_command(self):
+        
         print("command")
 class OlympicException(Exception):
     def __init__(self, message) -> None:
