@@ -70,17 +70,31 @@ class App:
         send_button["fg"] = "#000000"
         send_button["justify"] = "center"
         send_button["text"] = "Send"
-        send_button.place(x=210,y=250,width=70,height=25)
+        send_button.place(x=210,y=220,width=70,height=25)
         send_button["command"] = self.send_button_command
 
+        plot_button=tk.Button(root)
+        plot_button["bg"] = "#f0f0f0"
+        ft = tkFont.Font(family='Times',size=10)
+        plot_button["font"] = ft
+        plot_button["fg"] = "#000000"
+        plot_button["justify"] = "center"
+        plot_button["text"] = "Plot"
+        plot_button.place(x=210,y=280,width=70,height=25)
+        plot_button["command"] = self.plot_button_command
+
+    def plot_button_command(self):
+
+        pass
     def send_button_command(self):
         if self.year_entry.get()=="" or self.city_entry.get()=="":
-            print("toto")
+            
             self.info_text.set("Entry must not be empty")
             self.info_label["text"] = self.info_text.get()
         else:
             ol=OlympicScrapper(self.city_entry.get(),self.year_entry.get())
-            print(ol.olympic_data())
+            ol.to_csv()
+            # print(ol.olympic_data())
             pass
         print("command")
 class OlympicException(Exception):
@@ -158,7 +172,11 @@ class OlympicScrapper:
             return total_medals
         else:
             raise OlympicException("Medal type not recognized")
-        
+    def to_csv(self):
+        filename=self.city_host+'-'+str(self.year)+".csv"
+        df=self.olympic_data()
+        df.to_csv(filename,index=False)
+
     def olympic_data(self) -> pd.DataFrame:
 
         data = {
