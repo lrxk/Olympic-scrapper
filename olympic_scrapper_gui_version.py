@@ -93,7 +93,7 @@ class OlympicScrapper:
         self.city_host=city_host
         self.year=year
         self.page_soup=self.getPageSoup()
-        self.result=self.result
+        self.result=self.getResult()
         pass
     def createUrl(self):
         url = self.url_part1+self.city_host+'-'+str(self.year)+self.url_part2
@@ -163,10 +163,10 @@ class OlympicScrapper:
 
         data = {
             'countries': self.getCountries(),
-            'gold_medals': self.getMedals(medal_type='gold'),
-            'silver_medals': self.getMedals(medal_type='silver'),
-            'bronze_medals': self.getMedals(medal_type='bronze'),
-            'total_medals': self.getMedals(medal_type='total'),
+            'gold_medals': self.getMedals(medal_type='Gold'),
+            'silver_medals': self.getMedals(medal_type='Silver'),
+            'bronze_medals': self.getMedals(medal_type='Bronze'),
+            'total_medals': self.getMedals(medal_type='Total'),
         }
         df = pd.DataFrame(data)
         return df
